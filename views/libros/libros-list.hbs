@@ -1,0 +1,53 @@
+<section class="py-5 text-center container">
+<div class="row py-lg-5">
+<div class="col-lg-6 col-md-8 mx-auto">
+    <h1 class="fw-light">Libros</h1>
+    <p class="lead text-muted">Una librería online. </p>
+    <p>
+    <a href="/create-libros" class="btn btn-primary my-2">Agregar nuevo libro</a>
+    <a href="/create-categorias" class="btn btn-secondary my-2">Agregar categoria</a>
+    <a href="/create-autores" class="btn btn-secondary my-2">Agregar autor</a>
+    <a href="/create-editoriales" class="btn btn-secondary my-2">Agregar editorial</a>
+    </p>
+</div>
+</div>
+</section>
+
+<div class="d-flex justify-content-center mb-3">
+    <h1 class="fw-light fw-bold">Libros agregados</h1>
+</div>
+
+<div class="album py-3 bg-light">
+<div class="container mx-auto">
+
+<div class="row">
+
+    {{#if hasLibros}}
+    {{#each libros as |libro|}}
+        <div class="card col-3 mb-3 ms-3">
+            <div class="card-body text-center">
+                <img src="{{libro.portada}}" alt="Imagen de {{libro.titulo}}" class="libro-portada col-md-5 offset-1 mb-2" />
+                <h5 class="card-title mb-3">Titulo: {{libro.titulo}}</h5>
+                <h6 class="card-subtitle text-muted mb-2">Fecha de publicación: {{libro.publicacion}}</h6>
+                <h6 class="card-subtitle text-muted mb-1">Categoria: {{libro.categoria}}</h6>
+                <h6 class="card-text">Autor: {{libro.autor}}</h6>
+                <h6 class="card-text">Editorial: {{libro.editorial}}</h6>
+
+                <div class="mb-3 d-flex justify-content-center">
+                    <div><a href="/edit-libros/{{libro.id}}?edit=true" class="btn btn-warning me-1">Editar</a></div>
+
+                    <form id="form-delete" class="form-inline" action="/delete-libros" method="post">
+                        <input type="hidden" name="libroId" value="{{libro.id}}" />
+                        <button type="submit" id="delete-libros" class="btn btn-danger ms-1">Eliminar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+{{else}}
+    <h1>No hay libros agregados</h1>
+{{/if}}
+
+</div>
+</div>
+</div>

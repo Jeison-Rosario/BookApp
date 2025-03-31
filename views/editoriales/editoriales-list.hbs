@@ -1,0 +1,53 @@
+<section class="py-5 text-center container">
+  <div class="row py-lg-5">
+    <div class="col-lg-6 col-md-8 mx-auto">
+      <h1 class="fw-light">Editoriales de libros</h1>
+      <p class="lead text-muted">Una librería online.</p>
+      <p>
+        <a href="/create-editoriales" class="btn btn-primary my-2">Agregar nueva editorial</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="d-flex justify-content-center mb-3">
+  <h1 class="fw-light fw-bold">Editoriales agregadas</h1>
+</div>
+
+<div class="album py-3 bg-light">
+  <div class="container">
+
+    <div class="row">
+
+      {{#if hasEditoriales}}
+
+        {{#each editoriales as |editorial|}}
+
+          <div class="card text-center col-md-2 ms-3">
+            <div class="card-body">
+                <h5 class="card-title">Editorial: {{editorial.editorial}}</h5>
+                <h6 class="card-subtitle text-muted">Teléfono: {{editorial.telefono}}</h6>
+                <p class="card-text">País: {{editorial.pais}}</p>
+                <p class="card-text">Libros publicados: {{editorial.cantidadLibros}}</p>
+            </div>
+
+              <div class="d-flex justify-content-center">
+                  <div><a href="/edit-editoriales/{{editorial.idEditorial}}?edit=true" class="btn btn-warning me-1">Editar</a></div>
+
+                  <form class="form-inline" action="/delete-editoriales" method="post">
+                    <input type="hidden" name="editorialId" value="{{editorial.idEditorial}}" />
+                    <button type="submit" class="btn btn-danger ms-1">Eliminar</button>
+                  </form>
+              </div>
+          </div>
+
+        {{/each}}
+      {{else}}
+
+        <h1>No hay editoriales agregados</h1>
+
+      {{/if}}
+
+    </div>
+  </div>
+</div>

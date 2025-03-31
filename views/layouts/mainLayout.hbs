@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
+    <link rel="icon" type="image/png" href="/uploads/default.png">
+    <title>{{pageTitle}}</title>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+<div class="container-fluid">
+    <a class="navbar-brand" href="/">BookApp</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+    <ul class="navbar-nav mx-auto mb-2 mb-md-0">
+        <li class="nav-item">
+        <a class="nav-link {{#if homeActive}}active{{/if}}" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link {{#if libroActive}}active{{/if}}" href="/libros-list">Libros</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link {{#if categoriaActive}}active{{/if}}" href="/categorias-list">Categorias</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link {{#if autorActive}}active{{/if}}" href="/autores-list">Autores</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link {{#if editorialActive}}active{{/if}}" href="/editoriales-list">Editoriales</a>
+        </li>
+    </ul>
+    <form class="d-flex mb-2 mb-md-0" role="search" method="GET" action="/">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+</div>
+</nav>
+
+<main class="container">
+
+{{{body}}}
+
+</main>
+
+<div class="glasp-extension-toaster" style="display: block; width: 320px; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; top: 40px; right: 24px; z-index: 9999;"></div>
+<div class="glasp-extension" style="display: block; width: unset; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; bottom: 16px; right: 16px; z-index: 9999;"></div>
+<div id="c4g-content-root" class="c4g-widget" data-darkreader-mode="dynamic" data-darkreader-scheme="dark"><meta name="darkreader" content="7a27c784220541948485ff8ba845e969"></div>
+<div id="monica-content-root" class="monica-widget" style="pointer-events: auto;"></div>
+</body>
+
+</html>

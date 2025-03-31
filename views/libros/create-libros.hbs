@@ -1,0 +1,92 @@
+<div class="row">
+
+<div class="col-md-3"></div>
+<div class="col-md-6">
+
+    {{#if hasCategorias}}
+
+    <div class="card">
+    <div class="card-header bg-dark text-white">
+        {{#if editMode}}Edicion{{else}}Creacion{{/if}} de libros
+    </div>
+    <div class="card-body">
+
+    <form method="POST" enctype="multipart/form-data" action="{{#if editMode}}/edit-libros{{else}}/create-libros{{/if}}">
+    <div class="mb-3">
+        <label for="image" class="form-label">Portada</label>
+        <input type="file" class="form-control" id="image" name="portada" />
+    
+        {{#if editMode}}
+            {{#if libro.portada}}
+                <div>
+                    <img src="{{libro.portada}}" alt="Portada de {{libro.titulo}}" class="libro-portada col-sm-4" />
+                </div>
+            {{/if}}
+        {{/if}}
+    </div>
+
+    <div class="mb-3">
+        <label for="titulo" class="form-label">Titulo</label>
+        <input type="text" class="form-control" id="titulo" name="titulo" value="{{#if editMode}}{{libro.titulo}}{{/if}}" />
+    </div>
+
+    <div class="mb-3">
+        <label for="publicacion" class="form-label">Fecha de publicacion</label>
+        <input type="date" class="form-control" id="publicacion" name="publicacion" value="{{#if editMode}}{{libro.publicacion}}{{/if}}" />
+    </div>
+
+    <div class="mb-3">
+    <label for="categoria" class="form-label">Categoria: </label>
+    <select class="form-select" id="categoria" name="libroCategoriaId" required>
+        <option value=""{{#unless editMode}}selected{{/unless}}>Seleccione una opción</option>
+        {{#each categorias as |categoria|}}
+            <option value="{{categoria.idCategoria}}" {{#if (equalValue categoria.id ../libro.categoriaId)}}selected{{/if}}>{{categoria.categoria}}</option>
+        {{/each}}
+    </select>
+    </div>
+
+    <div class="mb-3">
+    <label for="autor" class="form-label">Autor/a: </label>
+    <select class="form-select" id="autor" name="libroAutorId" required>
+        <option value=""{{#unless editMode}}selected{{/unless}}>Seleccione una opción</option>
+        {{#each autores as |autor|}}
+            <option value="{{autor.idAutor}}" {{#if (equalValue autor.id ../libro.autorId)}}selected{{/if}}>{{autor.autor}}</option>
+        {{/each}}
+    </select>
+    </div>
+
+    <div class="mb-3">
+    <label for="editorial" class="form-label">Editorial: </label>
+    <select class="form-select" id="editorial" name="libroEditorialId" required>
+        <option value=""{{#unless editMode}}selected{{/unless}}>Seleccione una opción</option>
+        {{#each editoriales as |editorial|}}
+            <option value="{{editorial.idEditorial}}" {{#if (equalValue editorial.id ../libro.editorialId)}}selected{{/if}}>{{editorial.editorial}}</option>
+        {{/each}}
+    </select>
+    </div>
+
+    {{#if editMode}}
+        <input type="hidden" name="libroId" value="{{libro.idLibro}}" />
+    {{/if}}
+
+    <button type="submit" class="btn btn-primary">{{#if editMode}}Editar{{else}}Crear{{/if}}</button>
+    <a href="/" type="button" class="btn btn-warning">Volver atrás</a>
+</form>
+
+    </div>
+    </div>
+
+    {{else}}
+
+    <h2>No hay categorias, autores o editoriales agregados.</h2>
+    <h5>Para agregar un libro, primero debe agregar una categoria, una autor y una editorial.</h5>
+    <a href="/create-categorias" class="btn btn-secondary my-2">Agregar categoria</a>
+    <a href="/create-autores" class="btn btn-secondary my-2">Agregar autor</a>
+    <a href="/create-editoriales" class="btn btn-secondary my-2">Agregar editorial</a>
+
+    {{/if}}
+
+</div>
+<div class="col-md-6"></div>
+
+</div>

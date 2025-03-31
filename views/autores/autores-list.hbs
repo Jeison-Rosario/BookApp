@@ -1,0 +1,54 @@
+<section class="py-5 text-center container">
+  <div class="row py-lg-5">
+    <div class="col-lg-6 col-md-8 mx-auto">
+      <h1 class="fw-light">Autores de libros</h1>
+      <p class="lead text-muted">Una librería online.</p>
+      <p>
+        <a href="/create-autores" class="btn btn-primary my-2">Agregar nuevo autor</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<div class="d-flex justify-content-center mb-3">
+  <h1 class="fw-light fw-bold">Autores agregados</h1>
+</div>
+
+<div class="album py-3 bg-light">
+  <div class="container">
+
+    <div class="row">
+
+      {{#if hasAutores}}
+
+        {{#each autores as |autor|}}
+
+          <div class="card text-center col-md-2 ms-3">
+            <div class="card-body">
+                <h5 class="card-title">Autor/a:</h5>
+                <h6 class="card-text"> {{autor.autor}}</h6>
+                <h5 class="card-subtitle">Correo electrónico:</h5>
+                <p class="card-text"> {{autor.correo}}</p>
+                <p class="card-text">Libros publicados: {{autor.cantidadLibros}}</p>
+            </div>
+
+              <div class="d-flex justify-content-center">
+                  <div><a href="/edit-autores/{{autor.idAutor}}?edit=true" class="btn btn-warning me-1">Editar</a></div>
+
+                  <form class="form-inline" action="/delete-autores" method="post">
+                    <input type="hidden" name="autorId" value="{{autor.idAutor}}" />
+                    <button type="submit" class="btn btn-danger ms-1">Eliminar</button>
+                  </form>
+              </div>
+          </div>
+
+        {{/each}}
+      {{else}}
+
+        <h1>No hay autores agregados</h1>
+
+      {{/if}}
+
+    </div>
+  </div>
+</div>
