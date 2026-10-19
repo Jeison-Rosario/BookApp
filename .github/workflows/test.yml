@@ -1,0 +1,42 @@
+name: BookApp tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci-test-only
+          MYSQL_DATABASE: bookapp_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -pci-test-only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      MYSQLHOST: 127.0.0.1
+      MYSQLPORT: 3306
+      MYSQLDATABASE: bookapp_test
+      MYSQLUSER: root
+      MYSQLPASSWORD: ci-test-only
+      DEMO_MODE: 'true'
+      MAIL_ENABLED: 'false'
+      RUN_MYSQL_TESTS: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --omit=dev
+      - run: npm run db:sync
+      - run: npm run seed:demo
+      - run: npm test

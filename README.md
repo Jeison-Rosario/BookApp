@@ -1,65 +1,75 @@
 # BookApp · Catálogo y gestión de libros
 
-Aplicación web para administrar libros, autores, categorías y editoriales, consultar un catálogo y buscar libros por título. Proyecto académico con Node.js, Express, Handlebars, Sequelize y MySQL.
+Aplicación académica con Node.js, Express, Handlebars, Sequelize y MySQL para gestionar libros, autores, categorías y editoriales. Incluye búsqueda por título, portadas y notificación opcional al autor.
 
-## Funcionalidades implementadas
+La configuración predeterminada es una **demo de solo lectura** con correo desactivado. El catálogo se puede explorar desde el navegador; las escrituras y cargas se bloquean en el servidor antes de procesar formularios. No hay una URL de demo confirmada todavía.
 
-- Listado, creación, edición y eliminación de libros.
-- Gestión de autores, categorías y editoriales mediante controladores y vistas propios.
-- Relaciones entre cada libro y su autor, categoría y editorial.
-- Carga de portadas con Multer.
-- Búsqueda por título en el catálogo.
-- Envío de una notificación al correo del autor al crear un libro.
+## Ejecutar localmente
 
-## Estructura
+Requiere Node.js 22 o 24 y MySQL/MariaDB. Crear una base vacía y un usuario local para pruebas.
 
-- `app.js`: servidor, vistas, rutas y sincronización de modelos.
-- `context/appContext.js`: conexión MySQL mediante variables de entorno.
-- `models/`: entidades y asociaciones Sequelize.
-- `controllers/` y `routes/`: operaciones y navegación.
-- `views/`: interfaz Handlebars.
-- `middlewares/upload.js`: almacenamiento de portadas.
-
-## Preparación local
-
-Requiere Node.js, npm y una instancia MySQL. La versión de Node no está fijada en el repositorio; verificar los requisitos de las dependencias antes de instalar.
-
-1. Clonar el repositorio e ingresar a su carpeta.
-2. Ejecutar `npm ci`, incluyendo las dependencias de desarrollo: actualmente varias librerías necesarias para ejecutar la aplicación están en esa sección.
-3. Crear una base MySQL vacía para pruebas.
-4. Configurar un archivo `.env` local con valores propios:
-
-```dotenv
-MYSQLDATABASE=bookapp_local
-MYSQLUSER=usuario_local
-MYSQLPASSWORD=CAMBIAR_LOCALMENTE
-MYSQLHOST=localhost
-MYSQLPORT=3306
+```sh
+npm ci
+cp .env.example .env
 ```
 
-5. Ejecutar `node app.js` desde la raíz.
-6. Abrir http://localhost:3000.
+En Windows puede copiarse el archivo desde el explorador o con `Copy-Item .env.example .env`. Completar las variables `MYSQL*` en `.env`; nunca versionar credenciales.
 
-El arranque llama a `connection.sync()`; la base debe existir y el usuario necesita permisos para crear las tablas. El script actual `npm start` apunta a `/app.js`; usar el comando anterior hasta corregirlo.
+```sh
+npm run db:sync
+npm run seed:demo
+npm start
+```
 
-## Comprobación manual sugerida
+Abrir http://127.0.0.1:3000. `seed:demo` es opcional, añade tres libros ficticios y se cancela si las tablas ya contienen datos. Los comandos no borran ni reinician bases existentes. `db:sync` crea tablas iniciales sin `force` ni `alter`; futuros cambios de esquema deben gestionarse con migraciones.
 
-Crear primero un autor, una categoría y una editorial. Registrar un libro, buscarlo por título, editarlo y comprobar su portada. Hacer las pruebas de correo únicamente después de configurar credenciales propias y un destinatario de prueba.
+Para practicar el CRUD completo, usar `DEMO_MODE=false` solo en una instancia local privada y reiniciar. El servidor escucha por defecto en `127.0.0.1`; en alojamiento respeta `IP`/`HOST` y `PORT`. `npm run dev` inicia nodemon para desarrollo.
 
-## Limitaciones y siguientes mejoras
+## Despliegue gratuito
 
-- Hay credenciales SMTP incrustadas en `controllers/librosController.js` y un `.env` versionado. Revocar las credenciales expuestas, sustituirlas por variables locales y limpiar el historial cuando corresponda. Borrar un archivo del último commit no revoca un secreto.
-- No ejecutar el envío con la configuración publicada. La configuración SMTP todavía no lee variables de entorno.
-- Agregar autenticación, autorización y protección CSRF antes de exponer operaciones de administración.
-- Limitar tamaño y tipos permitidos en las cargas de archivos.
-- Al editar sin nueva portada, el controlador asigna la imagen por defecto: conservar la anterior.
-- Revisar los borrados en cascada de autores, categorías y editoriales, porque pueden eliminar libros asociados.
-- Separar el envío de correo del guardado mediante una cola o mecanismo de reintento.
-- Corregir scripts, distribuir correctamente dependencies/devDependencies y agregar migraciones y pruebas.
+Seguir [la guía paso a paso para alwaysdata](docs/ALWAYSDATA.md). Incluye cuenta, base de datos, configuración, comandos, comprobaciones y conexión final al portafolio. No se necesita contratar un dominio.
 
-## Estado de validación
+## Variables
 
-Documentación preparada mediante revisión estática del código. No se ejecutaron la aplicación, MySQL ni envíos de correo. `npm test` es actualmente un marcador que termina con error; no representa una suite de pruebas.
+| Variable | Uso |
+| --- | --- |
+| `MYSQLHOST`, `MYSQLPORT` | Dirección y puerto de MySQL/MariaDB |
+| `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD` | Base y acceso local o del alojamiento |
+| `IP` / `HOST`, `PORT` | Dirección y puerto HTTP; usar los asignados por alwaysdata |
+| `DEMO_MODE` | `true` por defecto: bloquea operaciones distintas de GET, HEAD y OPTIONS |
+| `MAIL_ENABLED` | `false` por defecto; demo siempre desactiva el correo |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | Solo necesarias para activar correo fuera de demo |
+
+No se requiere una cuenta SMTP para publicar el catálogo. El envío utiliza texto plano y límites de tiempo; si falla, el libro ya guardado se conserva. La configuración valida nombres de variables y valores de puertos sin imprimir contraseñas.
+
+## Organización
+
+- `server.js`: conexión inicial, arranque y apagado del servidor.
+- `app.js`: Express, rutas, vistas y manejo de errores.
+- `config/`: variables y validación de configuración.
+- `context/`: conexión Sequelize.
+- `models/`, `controllers/`, `routes/`: entidades y operaciones.
+- `services/mailService.js`: correo opcional sin credenciales incrustadas.
+- `middlewares/`: bloqueo de escrituras en demo y carga de imágenes.
+- `views/`, `public/`: interfaz y recursos locales.
+- `scripts/`: inicialización de tablas y datos ficticios.
+- `test/`: pruebas con el ejecutor integrado de Node.
+
+## Validación realizada
+
+```sh
+npm ci --omit=dev
+npm test
+```
+
+Las pruebas cubren configuración, renderizado y búsquedas HTTP con datos simulados, archivos estáticos, bloqueo de escrituras, correo desactivado y conservación de portada al editar. Las pruebas normales no se conectan a una base ni envían correos. El workflow de GitHub Actions prepara una base MySQL 8 de prueba y activa una comprobación adicional con `RUN_MYSQL_TESTS=true`, incluyendo el rechazo de un segundo seed. No activar esa opción contra una base que no sea de pruebas. La conexión y creación del esquema deben verificarse con la base real durante el despliegue. No se ha comprobado visualmente la interfaz ni publicado el sitio en alwaysdata en esta preparación.
+
+## Pendientes
+
+- Revocar credenciales históricamente expuestas; retirar `.env` de esta rama no invalida sus versiones anteriores.
+- Incorporar autenticación, autorización y protección CSRF antes de exponer administración con escritura.
+- Mejorar validaciones del CRUD y revisar borrados en cascada de autores, categorías y editoriales.
+- Añadir migraciones, pruebas con MySQL/MariaDB real y validación del contenido de imágenes antes de habilitar cargas públicas.
 
 ## Autor
 
