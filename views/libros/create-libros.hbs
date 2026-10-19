@@ -14,7 +14,7 @@
     <form method="POST" enctype="multipart/form-data" action="{{#if editMode}}/edit-libros{{else}}/create-libros{{/if}}">
     <div class="mb-3">
         <label for="image" class="form-label">Portada</label>
-        <input type="file" class="form-control" id="image" name="portada" />
+        <input type="file" class="form-control" id="image" name="portada" accept="image/png,image/jpeg" />
     
         {{#if editMode}}
             {{#if libro.portada}}
@@ -40,7 +40,7 @@
     <select class="form-select" id="categoria" name="libroCategoriaId" required>
         <option value=""{{#unless editMode}}selected{{/unless}}>Seleccione una opción</option>
         {{#each categorias as |categoria|}}
-            <option value="{{categoria.idCategoria}}" {{#if (equalValue categoria.id ../libro.categoriaId)}}selected{{/if}}>{{categoria.categoria}}</option>
+            <option value="{{categoria.idCategoria}}" {{#if (equalValue categoria.idCategoria ../libro.categoriaLibroId)}}selected{{/if}}>{{categoria.categoria}}</option>
         {{/each}}
     </select>
     </div>
@@ -50,7 +50,7 @@
     <select class="form-select" id="autor" name="libroAutorId" required>
         <option value=""{{#unless editMode}}selected{{/unless}}>Seleccione una opción</option>
         {{#each autores as |autor|}}
-            <option value="{{autor.idAutor}}" {{#if (equalValue autor.id ../libro.autorId)}}selected{{/if}}>{{autor.autor}}</option>
+            <option value="{{autor.idAutor}}" {{#if (equalValue autor.idAutor ../libro.autorLibroId)}}selected{{/if}}>{{autor.autor}}</option>
         {{/each}}
     </select>
     </div>
@@ -60,7 +60,7 @@
     <select class="form-select" id="editorial" name="libroEditorialId" required>
         <option value=""{{#unless editMode}}selected{{/unless}}>Seleccione una opción</option>
         {{#each editoriales as |editorial|}}
-            <option value="{{editorial.idEditorial}}" {{#if (equalValue editorial.id ../libro.editorialId)}}selected{{/if}}>{{editorial.editorial}}</option>
+            <option value="{{editorial.idEditorial}}" {{#if (equalValue editorial.idEditorial ../libro.editorialLibroId)}}selected{{/if}}>{{editorial.editorial}}</option>
         {{/each}}
     </select>
     </div>

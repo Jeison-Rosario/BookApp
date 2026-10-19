@@ -1,10 +1,11 @@
-<html lang="en">
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/css/bootstrap/bootstrap.min.css">
-    <link rel="icon" type="image/png" href="/uploads/default.png">
+    <link rel="icon" type="image/svg+xml" href="/assets/images/book-placeholder.svg">
     <title>{{pageTitle}}</title>
 </head>
 
@@ -19,7 +20,7 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mx-auto mb-2 mb-md-0">
         <li class="nav-item">
-        <a class="nav-link {{#if homeActive}}active{{/if}}" aria-current="page" href="/">Home</a>
+        <a class="nav-link {{#if homeActive}}active{{/if}}" aria-current="page" href="/">Catálogo</a>
         </li>
         <li class="nav-item">
         <a class="nav-link {{#if libroActive}}active{{/if}}" href="/libros-list">Libros</a>
@@ -35,22 +36,19 @@
         </li>
     </ul>
     <form class="d-flex mb-2 mb-md-0" role="search" method="GET" action="/">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <input class="form-control me-2" type="search" placeholder="Buscar por título" aria-label="Buscar libros" name="search">
+        <button class="btn btn-outline-success" type="submit">Buscar</button>
     </form>
 </div>
 </nav>
 
 <main class="container">
+{{#if demoMode}}<div class="alert alert-info" role="status">Demo de solo lectura con datos ficticios. Puedes explorar y buscar; guardar, eliminar, subir archivos y enviar correos están desactivados.</div>{{/if}}
 
 {{{body}}}
 
 </main>
 
-<div class="glasp-extension-toaster" style="display: block; width: 320px; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; top: 40px; right: 24px; z-index: 9999;"></div>
-<div class="glasp-extension" style="display: block; width: unset; margin: unset; padding: unset; border: unset; border-radius: unset; outline: unset; background-color: unset; box-shadow: unset; position: fixed; bottom: 16px; right: 16px; z-index: 9999;"></div>
-<div id="c4g-content-root" class="c4g-widget" data-darkreader-mode="dynamic" data-darkreader-scheme="dark"><meta name="darkreader" content="7a27c784220541948485ff8ba845e969"></div>
-<div id="monica-content-root" class="monica-widget" style="pointer-events: auto;"></div>
+<script src="/assets/js/bootstrap/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

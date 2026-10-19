@@ -2,7 +2,8 @@ const express = require("express");
 const fs = require('fs');
 const path = require("path");
 const { engine } = require("express-handlebars");
-const connection = require("./context/appContext");
+const config = require("./config");
+const { demoGuard } = require("./middlewares/demo");
 
 const { Libro, Autor, Categoria, Editorial } = require("./models/index");
 
@@ -20,7 +21,7 @@ const compareHelpers = require("./util/helpers/hbs/compare");
 app.engine(
     "hbs",
     engine({
-        layoutsDir: "views/layouts/",
+        layoutsDir: path.join(__dirname, "views/layouts"),
         defaultLayout: "mainLayout",
         extname: "hbs",
         helpers: {
@@ -30,9 +31,12 @@ app.engine(
 );
 
 app.set("view engine", "hbs");
-app.set("views", "views");
+app.set("views", path.join(__dirname, "views"));
 
-app.use(express.urlencoded({ extended: false }));
+app.disable("x-powered-by");
+app.use(demoGuard(config.demoMode));
+app.use(express.urlencoded({ extended: false, limit: "32kb" }));
+app.get("/healthz", (req, res) => res.json({ status: "ok", demo: config.demoMode }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -50,11 +54,13 @@ app.use(autorRouter);
 app.use(editorialRouter);
 app.use(errorController.Get404);
 
-connection
-    .sync()
-    .then(() => {
-        app.listen(3000);
-    })
-    .catch((err) => {
-        console.error("Error al sincronizar la base de datos:", err);
-    });
+
+app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err);
+    if (err.code === 'LIMIT_FILE_SIZE') return res.status(413).send('La imagen supera el límite de 2 MB.');
+    if (err.code === 'INVALID_IMAGE') return res.status(400).send('Solo se permiten imágenes PNG o JPEG.');
+    if (err.status === 413) return res.status(413).send('El formulario supera el tamaño permitido.');
+    console.error('Error de aplicación:', err.name || 'Error');
+    res.status(500).send('No se pudo completar la operación.');
+});
+module.exports = app;

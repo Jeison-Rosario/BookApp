@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+const { notifyNewBook } = require("../services/mailService");
 const autor = require("../models/autor");
 const categoria = require("../models/categoria");
 const editorial = require("../models/editorial");
@@ -68,8 +68,7 @@ exports.GetCreateLibros = (req, res, next) => {
   
   exports.PostCreateLibros = async (req, res, next) => {
       try {
-          console.log("Datos recibidos:", req.body);
-          console.log("Archivo recibido:", req.file);
+
   
           const libroTitulo = req.body.titulo;
           const libroPublicacion = new Date(req.body.publicacion).toISOString();
@@ -91,7 +90,7 @@ exports.GetCreateLibros = (req, res, next) => {
         const categorias = categoriaData.categoria;
         const editoriales = editorialData.editorial;
   
-          const libroPortada = req.file ? `/uploads/${req.file.filename}` : "/uploads/default.png";
+          const libroPortada = req.file ? `/uploads/${req.file.filename}` : "/assets/images/book-placeholder.svg";
   
           const nuevoLibro = await libro.create({
               titulo: libroTitulo,
@@ -108,41 +107,12 @@ exports.GetCreateLibros = (req, res, next) => {
               return res.redirect("/libros-list");
           }
   
-          const transporter = nodemailer.createTransport({
-              service: 'gmail',
-              secure: false,
-              port: 587,
-              auth: {
-                  user: "bookapp968@gmail.com",
-                  pass: "dpuuemohukuqtnnk",
-              },
-          });
-  
-          const mailOptions = {
-              from: "bookapp968@gmail.com", 
-              to: autorData.correo, 
-              subject: "Nuevo libro publicado",
-              html: `
-                  <h2>¡Hola ${autorData.autor}!</h2>
-                  <p>Se ha publicado tu nuevo libro: <strong>${libroTitulo}</strong>.</p>
-                  <p><strong>Fecha de Publicación:</strong> ${libroPublicacion}</p>
-                  <p><strong>Categoría:</strong> ${categorias}</p>
-                  <p><strong>Editorial:</strong> ${editoriales}</p>
-                  <p>Gracias por contribuir con nuestra biblioteca.</p>
-                  <br>
-                  <p>Atentamente,</p>
-                  <p><strong>Tu Biblioteca</strong></p>
-              `,
-          };
-  
-          transporter.sendMail(mailOptions, (error, info) => {
-              if (error) {
-                  console.log("Error al enviar el correo:", error);
-              } else {
-                  console.log("Correo enviado:", info.response);
-              }
-          });
-  
+          await notifyNewBook({ to: autorData.correo, author: autorData.autor,
+              title: libroTitulo, published: libroPublicacion, category: categorias,
+              publisher: editoriales }).catch(() => {
+                  console.error("Libro guardado; no se pudo enviar la notificación.");
+              });
+
           res.redirect("/libros-list");
       } catch (err) {
           console.log("Error al crear el libro:", err);
@@ -167,7 +137,9 @@ exports.GetEditLibros = (req, res, next) => {
         editorial.findAll()
     ])
     .then(([librosData, categoriasData, autoresData, editorialesData]) => {
-        const libro = librosData ? librosData.dataValues : null;
+        if (!librosData) return res.status(404).send("Libro no encontrado.");
+        const libro = { ...librosData.dataValues,
+            publicacion: new Date(librosData.publicacion).toISOString().slice(0, 10) };
         const categoria = categoriasData.map((c) => c.dataValues);
         const autor = autoresData.map((a) => a.dataValues);
         const editorial = editorialesData.map((e) => e.dataValues);
@@ -191,9 +163,9 @@ exports.GetEditLibros = (req, res, next) => {
 };
 
 exports.PostEditLibros = (req, res, next) => {
-    upload.single('portada')(req, res, function (err) {
+    upload.single('portada')(req, res, async function (err) {
         if (err) {
-            return res.status(500).send("Error al subir la imagen.");
+            return next(err);
         }
   
         const libroTitulo = req.body.titulo; 
@@ -203,7 +175,11 @@ exports.PostEditLibros = (req, res, next) => {
         const libroEditorial = req.body.libroEditorialId;
         const libroId = req.body.libroId;
         
-        const libroPortada = req.file ? `/uploads/${req.file.filename}` : "/uploads/default.png";
+        let existing;
+        try { existing = await libro.findByPk(libroId); }
+        catch (error) { return next(error); }
+        if (!existing) return res.status(404).send("Libro no encontrado.");
+        const libroPortada = req.file ? `/uploads/${req.file.filename}` : existing.portada;
   
         libro.update(
           { 
