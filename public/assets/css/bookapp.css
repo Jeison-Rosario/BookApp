@@ -1,0 +1,25 @@
+/* Una columna en móvil; dos en tablet y tres en escritorio. */
+.book-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+.book-grid > * { min-width: 0; }
+.book-card { min-width: 0; overflow-wrap: anywhere; }
+.book-card .card-body { min-width: 0; }
+.book-cover {
+  display: block;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  margin-inline: auto;
+  background: #f1f3f2;
+}
+@media (min-width: 576px) {
+  .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 992px) {
+  .book-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
