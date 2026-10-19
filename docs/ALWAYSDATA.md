@@ -72,11 +72,11 @@ En **Web > Sites**, crear un sitio de tipo **Node.js**:
 | Campo | Valor |
 | --- | --- |
 | Dirección | La dirección gratuita de tu cuenta `alwaysdata.net` |
-| Directorio de trabajo | `/home/CUENTA/apps/bookapp` |
+| Directorio de trabajo | `apps/bookapp` (relativo al directorio de la cuenta) |
 | Comando | `node /home/CUENTA/apps/bookapp/server.js` |
 | Versión Node | 22 o 24 |
 
-El comando absoluto funciona aunque no se muestre un campo de directorio de trabajo: vistas, imágenes y `.env` se resuelven desde la carpeta del proyecto.
+El campo de directorio de trabajo del panel es relativo a `/home/CUENTA`; no repetir ese prefijo o se duplicará la ruta. El comando sí utiliza la ruta absoluta. El comando absoluto funciona aunque no se muestre un campo de directorio de trabajo: vistas, imágenes y `.env` se resuelven desde la carpeta del proyecto.
 
 Activar HTTPS según las opciones del panel y reiniciar el sitio cuando se cambien sus variables o código. No iniciar un segundo proceso manual con `npm start` en paralelo al gestionado por el panel.
 
