@@ -11,11 +11,19 @@ function readConfig(env = process.env) {
   };
   const demoMode = bool('DEMO_MODE', true);
   const mailEnabled = bool('MAIL_ENABLED', false) && !demoMode;
+  const adminEnabled = bool('ADMIN_ENABLED', false);
   const required = ['MYSQLDATABASE', 'MYSQLUSER', 'MYSQLHOST'];
   if (mailEnabled) required.push('SMTP_HOST', 'SMTP_USER', 'SMTP_PASSWORD', 'MAIL_FROM');
+  if (adminEnabled) required.push('ADMIN_USERNAME', 'ADMIN_PASSWORD_HASH', 'SESSION_SECRET');
   const missing = required.filter(key => !env[key]?.trim());
   if (missing.length) throw new Error(`Faltan variables de entorno: ${missing.join(', ')}`);
+  if (adminEnabled && !/^scrypt\$[a-f0-9]{32}\$[a-f0-9]{128}$/.test(env.ADMIN_PASSWORD_HASH)) throw new Error('ADMIN_PASSWORD_HASH no tiene un formato válido');
+  if (adminEnabled && env.SESSION_SECRET.length < 32) throw new Error('SESSION_SECRET requiere al menos 32 caracteres');
+  if (!demoMode && !adminEnabled && env.NODE_ENV === 'production') throw new Error('La escritura pública requiere ADMIN_ENABLED=true');
   return {
+    admin: { enabled: adminEnabled, username: env.ADMIN_USERNAME, passwordHash: env.ADMIN_PASSWORD_HASH,
+      secret: env.SESSION_SECRET, cookieSecure: bool('COOKIE_SECURE', env.NODE_ENV === 'production') },
+    trustProxy: bool('TRUST_PROXY', false),
     demoMode, mailEnabled,
     host: env.IP || env.HOST || '127.0.0.1',
     port: integer('PORT', 3000),

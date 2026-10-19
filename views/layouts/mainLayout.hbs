@@ -44,7 +44,8 @@
 </nav>
 
 <main class="container">
-{{#if demoMode}}<div class="alert alert-info" role="status">Demo de solo lectura con datos ficticios. Puedes explorar y buscar; guardar, eliminar, subir archivos y enviar correos están desactivados.</div>{{/if}}
+{{#if isAdmin}}<div class="alert alert-success d-flex flex-wrap gap-2 align-items-center justify-content-between" role="status"><span>Sesión de administrador: puedes gestionar el catálogo.</span><form action="/admin/logout" method="post" class="m-0"><input type="hidden" name="_csrf" value="{{csrfToken}}"><button class="btn btn-sm btn-outline-dark" type="submit">Cerrar sesión</button></form></div>{{else}}{{#if adminEnabled}}<p class="text-end"><a href="/admin/login">Acceso de administrador</a></p>{{/if}}{{/if}}
+{{#unless canManage}}{{#if demoMode}}<div class="alert alert-info" role="status">Demo de solo lectura con datos ficticios. Puedes explorar y buscar; guardar, eliminar, subir archivos y enviar correos están desactivados.</div>{{/if}}{{/unless}}
 
 {{{body}}}
 

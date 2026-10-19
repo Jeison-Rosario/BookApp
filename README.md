@@ -2,7 +2,9 @@
 
 Aplicación académica con Node.js, Express, Handlebars, Sequelize y MySQL para gestionar libros, autores, categorías y editoriales. Incluye búsqueda por título, portadas y notificación opcional al autor.
 
-La configuración predeterminada es una **demo de solo lectura** con correo desactivado. El catálogo se puede explorar desde el navegador; las escrituras y cargas se bloquean en el servidor antes de procesar formularios. No hay una URL de demo confirmada todavía.
+El catálogo público es una **demo de solo lectura** con correo desactivado. El acceso opcional de administrador permite gestionar registros y portadas mediante una sesión privada.
+
+[Probar demo](https://bookapp.alwaysdata.net/) · [Configurar administrador](docs/ADMIN.md)
 
 ## Ejecutar localmente
 
@@ -23,7 +25,7 @@ npm start
 
 Abrir http://127.0.0.1:3000. `seed:demo` es opcional, añade tres libros ficticios y se cancela si las tablas ya contienen datos. Los comandos no borran ni reinician bases existentes. `db:sync` crea tablas iniciales sin `force` ni `alter`; futuros cambios de esquema deben gestionarse con migraciones.
 
-Para practicar el CRUD completo, usar `DEMO_MODE=false` solo en una instancia local privada y reiniciar. El servidor escucha por defecto en `127.0.0.1`; en alojamiento respeta `IP`/`HOST` y `PORT`. `npm run dev` inicia nodemon para desarrollo.
+Para probar el CRUD desde alwaysdata, seguir [la guía de administrador](docs/ADMIN.md) y mantener `DEMO_MODE=true`. La escritura sin autenticación con `DEMO_MODE=false` queda restringida a entornos locales no productivos. El servidor escucha por defecto en `127.0.0.1`; en alojamiento respeta `IP`/`HOST` y `PORT`. `npm run dev` inicia nodemon para desarrollo.
 
 ## Despliegue gratuito
 
@@ -36,11 +38,15 @@ Seguir [la guía paso a paso para alwaysdata](docs/ALWAYSDATA.md). Incluye cuent
 | `MYSQLHOST`, `MYSQLPORT` | Dirección y puerto de MySQL/MariaDB |
 | `MYSQLDATABASE`, `MYSQLUSER`, `MYSQLPASSWORD` | Base y acceso local o del alojamiento |
 | `IP` / `HOST`, `PORT` | Dirección y puerto HTTP; usar los asignados por alwaysdata |
-| `DEMO_MODE` | `true` por defecto: bloquea operaciones distintas de GET, HEAD y OPTIONS |
+| `DEMO_MODE` | `true` por defecto: visitantes sin sesión solo pueden consultar; un administrador autenticado puede gestionar |
 | `MAIL_ENABLED` | `false` por defecto; demo siempre desactiva el correo |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, `MAIL_FROM` | Solo necesarias para activar correo fuera de demo |
 
 No se requiere una cuenta SMTP para publicar el catálogo. El envío utiliza texto plano y límites de tiempo; si falla, el libro ya guardado se conserva. La configuración valida nombres de variables y valores de puertos sin imprimir contraseñas.
+
+## Administrador
+
+`npm run admin:setup` configura el usuario, hash de contraseña y secreto de sesión de forma privada en el servidor. Reiniciar y acceder por HTTPS a `/admin/login`. No crea usuarios de MySQL ni cambia los permisos de la base. Consultar [ADMIN.md](docs/ADMIN.md) para activación, pruebas y límites.
 
 ## Organización
 
@@ -62,14 +68,14 @@ npm ci --omit=dev
 npm test
 ```
 
-Las pruebas cubren configuración, renderizado y búsquedas HTTP con datos simulados, archivos estáticos, bloqueo de escrituras, correo desactivado y conservación de portada al editar. Las pruebas normales no se conectan a una base ni envían correos. El workflow de GitHub Actions prepara una base MySQL 8 de prueba y activa una comprobación adicional con `RUN_MYSQL_TESTS=true`, incluyendo el rechazo de un segundo seed. No activar esa opción contra una base que no sea de pruebas. La conexión y creación del esquema deben verificarse con la base real durante el despliegue. No se ha comprobado visualmente la interfaz ni publicado el sitio en alwaysdata en esta preparación.
+Las pruebas cubren configuración, renderizado y búsquedas HTTP con datos simulados, archivos estáticos, bloqueo de escrituras, correo desactivado y conservación de portada al editar. Las pruebas normales no se conectan a una base ni envían correos. El workflow de GitHub Actions prepara una base MySQL 8 de prueba y activa una comprobación adicional con `RUN_MYSQL_TESTS=true`, incluyendo el rechazo de un segundo seed. No activar esa opción contra una base que no sea de pruebas. La conexión y creación del esquema deben verificarse con la base real durante el despliegue. El propietario validó la demo y su adaptación móvil en alwaysdata. El nuevo acceso de administrador aún requiere activación y comprobación en ese servidor.
 
 ## Pendientes
 
 - Revocar credenciales históricamente expuestas; retirar `.env` de esta rama no invalida sus versiones anteriores.
-- Incorporar autenticación, autorización y protección CSRF antes de exponer administración con escritura.
+- Para múltiples administradores o procesos, reemplazar el acceso configurado por entorno y las sesiones en memoria por usuarios y sesiones persistentes.
 - Mejorar validaciones del CRUD y revisar borrados en cascada de autores, categorías y editoriales.
-- Añadir migraciones, pruebas con MySQL/MariaDB real y validación del contenido de imágenes antes de habilitar cargas públicas.
+- Añadir migraciones, ampliar las pruebas con MySQL/MariaDB real y gestionar la limpieza de portadas antiguas. Las cargas están reservadas al administrador.
 
 ## Autor
 

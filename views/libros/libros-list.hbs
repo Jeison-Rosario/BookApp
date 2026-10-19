@@ -4,10 +4,10 @@
     <h1 class="fw-light">Libros</h1>
     <p class="lead text-muted">Una librería online. </p>
     <p>
-    <a href="/create-libros" class="btn btn-primary my-2">Agregar nuevo libro</a>
-    <a href="/create-categorias" class="btn btn-secondary my-2">Agregar categoria</a>
-    <a href="/create-autores" class="btn btn-secondary my-2">Agregar autor</a>
-    <a href="/create-editoriales" class="btn btn-secondary my-2">Agregar editorial</a>
+    {{#if @root.canManage}}<a href="/create-libros" class="btn btn-primary my-2">Agregar nuevo libro</a>{{/if}}
+    {{#if @root.canManage}}<a href="/create-categorias" class="btn btn-secondary my-2">Agregar categoria</a>{{/if}}
+    {{#if @root.canManage}}<a href="/create-autores" class="btn btn-secondary my-2">Agregar autor</a>{{/if}}
+    {{#if @root.canManage}}<a href="/create-editoriales" class="btn btn-secondary my-2">Agregar editorial</a>{{/if}}
     </p>
 </div>
 </div>
@@ -33,13 +33,14 @@
                 <h6 class="card-text">Autor: {{libro.autor}}</h6>
                 <h6 class="card-text">Editorial: {{libro.editorial}}</h6>
 
-                <div class="mb-3 d-flex flex-wrap gap-2 justify-content-center">
+                <div class="mb-3 d-flex flex-wrap gap-2 justify-content-center">{{#if @root.canManage}}
                     <div><a href="/edit-libros/{{libro.id}}?edit=true" class="btn btn-warning me-1">Editar</a></div>
 
                     <form id="form-delete" class="form-inline" action="/delete-libros" method="post">
+<input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                         <input type="hidden" name="libroId" value="{{libro.id}}" />
                         <button type="submit" id="delete-libros" class="btn btn-danger ms-1">Eliminar</button>
-                    </form>
+                    </form>{{/if}}
                 </div>
             </div>
         </div>
