@@ -20,20 +20,20 @@
 <div class="album py-3 bg-light">
 <div class="container mx-auto">
 
-<div class="row">
+<div class="book-grid">
 
     {{#if hasLibros}}
     {{#each libros as |libro|}}
-        <div class="card col-3 mb-3 ms-3">
+        <div class="book-card card h-100">
             <div class="card-body text-center">
-                <img src="{{libro.portada}}" alt="Imagen de {{libro.titulo}}" class="libro-portada col-md-5 offset-1 mb-2" />
+                <img src="{{libro.portada}}" alt="Imagen de {{libro.titulo}}" class="book-cover mb-3" />
                 <h5 class="card-title mb-3">Titulo: {{libro.titulo}}</h5>
                 <h6 class="card-subtitle text-muted mb-2">Fecha de publicación: {{libro.publicacion}}</h6>
                 <h6 class="card-subtitle text-muted mb-1">Categoria: {{libro.categoria}}</h6>
                 <h6 class="card-text">Autor: {{libro.autor}}</h6>
                 <h6 class="card-text">Editorial: {{libro.editorial}}</h6>
 
-                <div class="mb-3 d-flex justify-content-center">
+                <div class="mb-3 d-flex flex-wrap gap-2 justify-content-center">
                     <div><a href="/edit-libros/{{libro.id}}?edit=true" class="btn btn-warning me-1">Editar</a></div>
 
                     <form id="form-delete" class="form-inline" action="/delete-libros" method="post">
