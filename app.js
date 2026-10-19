@@ -3,6 +3,9 @@ const fs = require('fs');
 const path = require("path");
 const { engine } = require("express-handlebars");
 const config = require("./config");
+const session = require("express-session");
+const MemoryStore = require("memorystore")(session);
+const { csrfToken, csrfProtection } = require("./middlewares/csrf");
 const { demoGuard } = require("./middlewares/demo");
 
 const { Libro, Autor, Categoria, Editorial } = require("./models/index");
@@ -34,8 +37,13 @@ app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
 app.disable("x-powered-by");
-app.use(demoGuard(config.demoMode));
-app.use(express.urlencoded({ extended: false, limit: "32kb" }));
+if (config.trustProxy) app.set('trust proxy', 1);
+app.use((req, res, next) => {
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('Referrer-Policy', 'same-origin');
+    res.set('X-Frame-Options', 'DENY');
+    next();
+});
 app.get("/healthz", (req, res) => res.json({ status: "ok", demo: config.demoMode }));
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -47,6 +55,26 @@ if (!fs.existsSync(uploadDir)) {
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+if (config.admin.enabled) {
+    const store = new MemoryStore({ max: 100, ttl: 3600000, checkPeriod: 600000 });
+    app.locals.sessionStore = store;
+    app.use(session({
+        name: 'bookapp.sid', secret: config.admin.secret,
+        resave: false, saveUninitialized: false,
+        store,
+        cookie: { httpOnly: true, secure: config.admin.cookieSecure, sameSite: 'strict', maxAge: 3600000 }
+    }));
+}
+app.use(express.urlencoded({ extended: false, limit: '32kb' }));
+app.use('/admin', require('./routes/admin'));
+app.use(demoGuard(config.demoMode, config.admin.enabled));
+app.use((req, res, next) => {
+    if (req.session?.isAdmin) res.locals.csrfToken = csrfToken(req);
+    // Las páginas cambian según la sesión; no almacenar formularios ni tokens en cachés compartidas.
+    res.set('Cache-Control', 'no-store');
+    if (req.is('multipart/form-data') && ['/create-libros', '/edit-libros'].includes(req.path)) return next();
+    csrfProtection(req, res, next);
+});
 app.use(libreriaRouter);
 app.use(libroRouter);
 app.use(categoriaRouter);

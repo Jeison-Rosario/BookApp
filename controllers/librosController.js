@@ -3,7 +3,6 @@ const autor = require("../models/autor");
 const categoria = require("../models/categoria");
 const editorial = require("../models/editorial");
 const libro = require("../models/libro");
-const upload = require("../middlewares/upload");
 
 exports.GetLibrosList = (req, res, next) => {
 
@@ -162,11 +161,8 @@ exports.GetEditLibros = (req, res, next) => {
     });
 };
 
-exports.PostEditLibros = (req, res, next) => {
-    upload.single('portada')(req, res, async function (err) {
-        if (err) {
-            return next(err);
-        }
+exports.PostEditLibros = async (req, res, next) => {
+
   
         const libroTitulo = req.body.titulo; 
         const libroPublicacion = req.body.publicacion; 
@@ -197,7 +193,6 @@ exports.PostEditLibros = (req, res, next) => {
             console.log(err);
             res.status(500).send("Error al editar el libro");
         });
-    });
   };
 
   exports.PostDeleteLibross = (req, res, next) => {

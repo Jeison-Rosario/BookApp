@@ -12,6 +12,7 @@
     <div class="card-body">
 
     <form method="POST" enctype="multipart/form-data" action="{{#if editMode}}/edit-libros{{else}}/create-libros{{/if}}">
+<input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
     <div class="mb-3">
         <label for="image" class="form-label">Portada</label>
         <input type="file" class="form-control" id="image" name="portada" accept="image/png,image/jpeg" />

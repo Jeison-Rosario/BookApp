@@ -1,6 +1,6 @@
 # Publicar la demo de BookApp en alwaysdata
 
-Esta guía corresponde a la rama `feat/alwaysdata-demo-20261019`. La demo pública permite explorar y buscar datos ficticios; no permite modificar registros, subir imágenes ni enviar correos.
+Esta guía corresponde a la rama `feat/alwaysdata-demo-20261019`. La demo pública permite explorar y buscar datos ficticios. El administrador opcional puede modificar registros y subir portadas tras iniciar sesión; el correo permanece desactivado. Ver [ADMIN.md](ADMIN.md).
 
 ## 1. Antes de desplegar
 
@@ -72,11 +72,11 @@ En **Web > Sites**, crear un sitio de tipo **Node.js**:
 | Campo | Valor |
 | --- | --- |
 | Dirección | La dirección gratuita de tu cuenta `alwaysdata.net` |
-| Directorio de trabajo | `apps/bookapp` (relativo al directorio de la cuenta) |
+| Directorio de trabajo | `/home/CUENTA/apps/bookapp` |
 | Comando | `node /home/CUENTA/apps/bookapp/server.js` |
 | Versión Node | 22 o 24 |
 
-El campo de directorio de trabajo del panel es relativo a `/home/CUENTA`; no repetir ese prefijo o se duplicará la ruta. El comando sí utiliza la ruta absoluta. El comando absoluto funciona aunque no se muestre un campo de directorio de trabajo: vistas, imágenes y `.env` se resuelven desde la carpeta del proyecto.
+El comando absoluto funciona aunque no se muestre un campo de directorio de trabajo: vistas, imágenes y `.env` se resuelven desde la carpeta del proyecto.
 
 Activar HTTPS según las opciones del panel y reiniciar el sitio cuando se cambien sus variables o código. No iniciar un segundo proceso manual con `npm start` en paralelo al gestionado por el panel.
 
@@ -86,7 +86,7 @@ Activar HTTPS según las opciones del panel y reiniciar el sitio cuando se cambi
 - `/` muestra tres libros con sus portadas de demostración.
 - Buscar parte de un título filtra el catálogo.
 - El menú móvil se abre y las páginas de listados cargan.
-- Una operación de crear, editar o eliminar devuelve 403. El bloqueo se aplica antes de procesar archivos y formularios.
+- Una operación de crear, editar o eliminar sin sesión de administrador devuelve 403. El bloqueo se aplica antes de procesar archivos y formularios.
 - No se envía correo, incluso si por error se configura `MAIL_ENABLED=true`, mientras `DEMO_MODE=true`.
 - Si aparece un error, revisar los logs del sitio ocultando credenciales antes de compartirlos. Comprobar primero versión de Node, variables y permisos de la base.
 
@@ -96,9 +96,9 @@ Cuando estos puntos pasen, añadir la URL HTTPS real como “Probar demo” en l
 
 ## Límites
 
-La demo no es una administración pública autenticada. No desactivar `DEMO_MODE` en un sitio abierto a visitantes: las rutas de administración todavía necesitan autenticación, autorización y protección CSRF. Para practicar el CRUD completo, usar una instancia local privada y `DEMO_MODE=false`.
+Para probar la administración completa, seguir [ADMIN.md](ADMIN.md) y mantener `DEMO_MODE=true`. El login habilita operaciones únicamente para esa sesión, con protección CSRF. No se necesita habilitar escritura anónima.
 
-Las imágenes subidas en modo privado se almacenan en `uploads/`, fuera de Git, con límite de 2 MB y filtro de MIME PNG/JPEG. El MIME declarado no verifica por sí solo el contenido del archivo; antes de habilitar cargas públicas se requiere validación adicional. Las portadas del seed están en `public/` y no necesitan almacenamiento de cargas.
+Las imágenes subidas en modo privado se almacenan en `uploads/`, fuera de Git, con límite de 2 MB y filtro de MIME PNG/JPEG. Además del MIME, se comprueba la firma PNG/JPEG antes de guardar. La carga requiere sesión de administrador y token CSRF. Las portadas del seed están en `public/` y no necesitan almacenamiento de cargas.
 
 ## Fuentes oficiales consultadas
 

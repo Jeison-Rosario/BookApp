@@ -4,7 +4,7 @@
       <h1 class="fw-light">Categorias</h1>
       <p class="lead text-muted">Una librería online.</p>
       <p>
-        <a href="/create-categorias" class="btn btn-primary my-2">Agregar nueva categoria</a>
+        {{#if @root.canManage}}<a href="/create-categorias" class="btn btn-primary my-2">Agregar nueva categoria</a>{{/if}}
       </p>
     </div>
   </div>
@@ -33,12 +33,13 @@
               <h6>{{categoria.cantidadLibros}}</h6>
             </div>
 
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center">{{#if @root.canManage}}
                 <div><a href="/edit-categorias/{{categoria.idCategoria}}?edit=true" class="btn btn-warning me-1" >Editar</a></div>
               <form class="form-inline" action="/delete-categorias" method="post">
+<input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
                 <input type="hidden" name="categoriaId" value="{{categoria.idCategoria}}" />
                 <button type="submit" class="btn btn-danger ms-1">Eliminar</button>
-              </form>
+              </form>{{/if}}
             </div>
 
           </div>

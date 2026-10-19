@@ -10,6 +10,7 @@
     <div class="card-body">
 
         <form method="POST" action="{{#if editMode}}/edit-editoriales{{else}}/create-editoriales{{/if}}">
+<input type="hidden" name="_csrf" value="{{@root.csrfToken}}">
         <div class="mb-3">
         <label for="name" class="form-label">Editorial</label>
         <input type="text" class="form-control" id="name" name="Name" value="{{#if editMode}}{{editorial.editorial}}{{/if}}" />
